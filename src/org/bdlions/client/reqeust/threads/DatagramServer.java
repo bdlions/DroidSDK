@@ -1,7 +1,6 @@
 package org.bdlions.client.reqeust.threads;
 
-
-import com.auction.util.ACTION;
+import org.bdlions.client.reqeust.threads.UDPClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -9,8 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bdlions.transport.packet.IPacketHeader;
@@ -26,28 +23,23 @@ import org.bdlions.transport.packet.PacketImpl;
  *
  * @author alamgir
  */
-public class DatagramClient implements Runnable, IServerCallback {
+public class DatagramServer implements Runnable {
 
     private final int SERVER_PORT = 10000;
     private final int CLIENT_PORT = 5000;
-    
-    private PacketMonitor packetMonitor = new PacketMonitor();
-
+    private InetAddress clientIP;
     boolean running = true;
     private DatagramSocket ds;
 //    private static IPacketHeader packetHeader;
     private Gson gson = new GsonBuilder().create();
 
-    public DatagramClient() throws SocketException {
-        ds = new DatagramSocket(CLIENT_PORT);
-        new Thread(packetMonitor).start();
+    public DatagramServer() throws SocketException {
+        ds = new DatagramSocket(SERVER_PORT);
     }
 
-    public void send(IPacketHeader packetHeader, String packetBodyContent, IServerCallback callback) {
+    public void send(IPacketHeader packetHeader, String packetBodyContent) {
         try {
 
-            packetMonitor.put(packetHeader.getPacketId(), callback);
-            
             int packetHeaderLengthSize = 2;
             int packetBodyLengthSize = 2;
 
@@ -69,11 +61,10 @@ public class DatagramClient implements Runnable, IServerCallback {
 
             System.arraycopy(packetBodyContent.getBytes(), 0, sendPacket, start, packetBodyContent.length());
 
-            ds.send(new DatagramPacket(sendPacket, sendPacket.length, InetAddress.getLocalHost(), SERVER_PORT));
-            
+            ds.send(new DatagramPacket(sendPacket, sendPacket.length, clientIP, CLIENT_PORT));
 
         } catch (IOException ex) {
-            Logger.getLogger(DatagramClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UDPClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -98,9 +89,6 @@ public class DatagramClient implements Runnable, IServerCallback {
                 String packetHeaderContent = new String(pacektHeaderData);
                 IPacketHeader packetHeader = gson.fromJson(packetHeaderContent, PacketHeaderImpl.class);
 
-                if(packetHeader.getAction() == ACTION.FETCH_BID_LIST){
-                    continue;
-                }
                 int dataLenghtPosition = packetHeaderLengthSize + packetHeaderLength;
                 String packetDataContent = null;
                 PacketImpl packetImpl = new PacketImpl();
@@ -113,61 +101,32 @@ public class DatagramClient implements Runnable, IServerCallback {
                     System.arraycopy(data, packetDataStart, packetDataBytes, 0, packetDataLength);
                     packetDataContent = new String(packetDataBytes);
                     packetImpl.setPacketBody(packetDataContent);
-                    
-                    packetMonitor.get(packetHeader.getPacketId()).resultHandler(packetHeader, packetDataContent);
-                    packetMonitor.removePacket(packetHeader.getPacketId());
                 }
+                clientIP = packet.getAddress();
+                System.out.println("Client IP : " + clientIP.getHostAddress());
 
-                
-                System.out.println("Received.");
-                //System.out.println(gson.toJson(packetImpl));
+                System.out.println("Received Request");
+                System.out.println(gson.toJson(packetImpl));
+                System.out.println("Sending response");
+                send(packetHeader, "{\"fistName\": \"Alagir\", \"lastName\": \"Kabir\", \"userName\": \"alamgir\", \"password\": \"pass\", \"message\": \"messs\", \"reasonCode\": 10, \"success\": true}");
             } catch (IOException ex) {
-                Logger.getLogger(DatagramClient.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(UDPClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    public void initialize(DatagramClient cl){
-
-
+    public static void main(String[] args) {
+        try {
+            
 //            String s = new GsonBuilder().create().toJson(packetHeader);
-//            DatagramClient cl = new DatagramClient();
+            DatagramServer cl = new DatagramServer();
             new Thread(cl).start();
+            System.out.println("Server started.");
             
-
-            PacketHeaderImpl packetHeader = new PacketHeaderImpl();
-            packetHeader.setAction(ACTION.SIGN_IN);
-            cl.send(packetHeader, "{\"userName\": \"" + "alamgir" + "\", \"password\": \"" + "pass12" + "\"}", this);
             
-            PacketHeaderImpl packetHeader2 = new PacketHeaderImpl();
-            packetHeader2.setAction(ACTION.FETCH_BID_LIST);
-            cl.send(packetHeader2, "{\"userName\": \"" + "alamgir" + "\", \"password\": \"" + "pass12" + "\"}", this);
-
-        
+        } catch (SocketException ex) {
+            Logger.getLogger(UDPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    public static void main(String[] args) throws SocketException {
-        DatagramClient cl = new DatagramClient();
-        cl.initialize(cl);
-    }
-
-    @Override
-    public void timeout(String packetId) {
-        System.out.println("Packet Id: " + packetId);
-    }
-
-    @Override
-    public void errorHandler(IPacketHeader packetHeader, String response) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void resultHandler(IPacketHeader packetHeader, String response) {
-        System.out.println("Result : " + gson.toJson(packetHeader) + " " + response);
-    }
-
-
-    
-    
 
 }
