@@ -103,7 +103,7 @@ public class UDPCom implements Runnable {
                 int packetHeaderLengthSize = 2;
                 int packetBodyLengthSize = 2;
 
-                byte[] received = new byte[1024];
+                byte[] received = new byte[3048];
                 DatagramPacket packet = new DatagramPacket(received, received.length);
                 ds.receive(packet);
                 byte[] data = packet.getData();

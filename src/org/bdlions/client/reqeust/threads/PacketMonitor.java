@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class PacketMonitor implements Runnable {
 
-    private final int PACKET_TIMEOUT = 5000;
+    private final int PACKET_TIMEOUT = 30000;
     private final ConcurrentHashMap<String, IServerCallback> packetMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Long> packetTimeoutMap = new ConcurrentHashMap<>();
 

@@ -45,7 +45,14 @@ public class DatagramClient implements IServerCallback {
         DatagramClient dcl = new DatagramClient();
         UDPCom cl =  UDPCom.getInstance("185.5.54.210", 10000);
 //        UDPClient cl = new UDPClient("127.0.0.1");
-        dcl.initialize(cl);
+//        dcl.initialize(cl);
+
+        org.bdlions.transport.packet.PacketHeaderImpl packetHeader = new org.bdlions.transport.packet.PacketHeaderImpl();
+        packetHeader.setAction(ACTION.FETCH_MY_PRODUCT_LIST);
+        packetHeader.setRequestType(REQUEST_TYPE.REQUEST);
+        String sessionId = "5653cdbf-c070-49b8-bb43-77b2ef8975e9";
+        packetHeader.setSessionId(sessionId);
+        cl.send(packetHeader, "{}", dcl);
     }
 
     @Override
