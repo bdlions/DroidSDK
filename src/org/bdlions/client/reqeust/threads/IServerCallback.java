@@ -5,7 +5,6 @@
  */
 package org.bdlions.client.reqeust.threads;
 
-import com.auction.dto.response.ClientResponse;
 import org.bdlions.transport.packet.IPacketHeader;
 
 /**
@@ -14,6 +13,5 @@ import org.bdlions.transport.packet.IPacketHeader;
  */
 public interface IServerCallback {
     public void timeout(String packetId);
-    public void errorHandler(IPacketHeader packetHeader, String response);
     public void resultHandler(IPacketHeader packetHeader, String response);
 }
