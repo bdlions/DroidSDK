@@ -5,11 +5,13 @@
  */
 package org.bdlions;
 
-import com.auction.util.ACTION;
-import com.auction.util.REQUEST_TYPE;
+import com.bdlions.util.ACTION;
+import com.bdlions.util.REQUEST_TYPE;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bdlions.client.reqeust.threads.IServerCallback;
 import org.bdlions.client.reqeust.threads.UDPCom;
 import org.bdlions.transport.packet.IPacketHeader;
@@ -47,12 +49,20 @@ public class DatagramClient implements IServerCallback {
 //        UDPClient cl = new UDPClient("127.0.0.1");
 //        dcl.initialize(cl);
 
-        org.bdlions.transport.packet.PacketHeaderImpl packetHeader = new org.bdlions.transport.packet.PacketHeaderImpl();
-        packetHeader.setAction(ACTION.FETCH_MY_PRODUCT_LIST);
-        packetHeader.setRequestType(REQUEST_TYPE.REQUEST);
-        String sessionId = "5653cdbf-c070-49b8-bb43-77b2ef8975e9";
-        packetHeader.setSessionId(sessionId);
-        cl.send(packetHeader, "{}", dcl);
+        for(int i  = 0; i < 1000; i ++){
+            org.bdlions.transport.packet.PacketHeaderImpl packetHeader = new org.bdlions.transport.packet.PacketHeaderImpl();
+            packetHeader.setAction(ACTION.FETCH_ALL_UOMS);
+            packetHeader.setRequestType(REQUEST_TYPE.REQUEST);
+            String sessionId = "5653cdbf-c070-49b8-bb43-77b2ef8975e9";
+            packetHeader.setSessionId(sessionId);
+        
+            try {
+                cl.send(packetHeader, "{}", dcl);
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override

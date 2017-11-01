@@ -45,9 +45,10 @@ public class PacketMonitor implements Runnable {
 
                     if (requestTime + PACKET_TIMEOUT >= currentTime) {
                         IServerCallback callback = packetMap.get(packetId);
-                        callback.timeout(packetId);
-                        packetMap.remove(packetId);
-                        packetTimeoutMap.remove(packetId);
+//                        callback.timeout(packetId);
+//                        packetMap.remove(packetId);
+//                        packetTimeoutMap.remove(packetId);
+//                        System.out.println("Removed packet after timed out: " + packetId);
                     }
                 }
                 TimeUnit.SECONDS.sleep(3);

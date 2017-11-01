@@ -1,6 +1,5 @@
 package org.bdlions;
 
-import org.bdlions.client.reqeust.threads.UDPCom;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;

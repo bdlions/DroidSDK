@@ -5,8 +5,8 @@
  */
 package org.bdlions.transport.packet;
 
-import com.auction.util.ACTION;
-import com.auction.util.REQUEST_TYPE;
+import com.bdlions.util.ACTION;
+import com.bdlions.util.REQUEST_TYPE;
 import java.util.UUID;
 
 /**
@@ -38,17 +38,6 @@ public class PacketHeaderImpl implements IPacketHeader{
         this.sessionId = sessionId;
     }
 
-    
-    @Override
-    public ACTION getAction() {
-        return action;
-    }
-
-    @Override
-    public REQUEST_TYPE getRequestType() {
-        return requestType;
-    }
-
     @Override
     public String getSessionId() {
         return sessionId;
@@ -62,6 +51,16 @@ public class PacketHeaderImpl implements IPacketHeader{
     @Override
     public boolean isBroken() {
         return isBroken;
+    }
+
+    @Override
+    public ACTION getAction() {
+        return action;
+    }
+
+    @Override
+    public REQUEST_TYPE getRequestType() {
+        return requestType;
     }
     
 }
